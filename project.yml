@@ -1,0 +1,249 @@
+title: "DDT, DaNE, and CDT model"
+description: >
+ Note: DDT and DaNE share the same sentences. 
+ DaNE adds NER annotations to some sentences in DDT.
+ CDT is a separate treebank with its own texts. 
+ But some CDT sentences overlap with DDT sentences (sent_id matching works for those).
+ "remaining docs" in combine.py are DDT sentences that have no corresponding CDT document.
+ DDT and DaNE: same sentences, different annotations (syntax, NER)
+ CDT: overlaps with DDT, adds document structure
+
+# Variables can be referenced across the project.yml using ${vars.var_name}
+vars:
+  config: "default"
+  lang: "da"
+  treebank: "UD_Danish-DDT"
+  corpus: "cdt"
+  train_name: "da_ddt-ud-train"
+  dev_name: "da_ddt-ud-dev"
+  test_name: "da_ddt-ud-test"
+  package_name: "ddt_dane_cdt"
+  package_version: "0.0.0"
+  gpu: -1
+
+# These are the directories that the project needs. The project CLI will make
+# sure that they always exist.
+directories: ["assets", "corpus", "training", "metrics", "configs", "packages"]
+
+# downloads DDT from Git and DaNE (dane) and CDT (dacoref) 
+# as zip files from Alexandra Institute
+assets:
+  - dest: "assets/${vars.treebank}"
+    git:
+      repo: "https://github.com/UniversalDependencies/${vars.treebank}"
+      branch: "master"
+      path: ""
+  - dest: "assets/dane.zip"
+    url: "http://danlp-downloads.alexandra.dk/datasets/ddt.zip"
+  - dest: "assets/dacoref.zip"
+    url: "http://danlp-downloads.alexandra.dk/datasets/dacoref.zip"
+
+# tried to imitate the workflow of combine.py
+workflows:
+  all:
+    - prepare_dane
+    - prepare_dacoref
+    - preprocess_dane
+    - preprocess_ddt
+    - combine
+    - train
+    - evaluate
+    - package
+
+# prepare DaNE for preprocessing, i.e.:
+# unzipping the .zip file
+# renaming the unzipped files 
+# using mv so as to conform to the requirements of combine()
+commands:
+  - name: prepare_dane
+    help: "Prepare DaNE data for preprocessing"
+    script:
+      - "unzip assets/dane.zip -d assets/dane"
+      - "mv assets/dane/ddt.train.conllu assets/dane/train.conllu"
+      - "mv assets/dane/ddt.test.conllu assets/dane/test.conllu"
+      - "mv assets/dane/ddt.dev.conllu assets/dane/dev.conllu"
+    deps:
+      - "assets/dane.zip"
+    outputs:
+      - "assets/dane/train.conllu"
+      - "assets/dane/dev.conllu"
+      - "assets/dane/test.conllu"
+
+# prepare DaNE for preprocessing, i.e.:
+# unzipping the .zip file 
+# note the different output file format,
+# CDT comes in one .conllu and three .json files.
+# I think combine.py handles that
+  - name: prepare_dacoref
+    help: "Prepare dacoref (CDT) data for preprocessing"
+    script:
+      - "unzip assets/dacoref.zip -d assets/dacoref"
+    deps:
+      - "assets/dacoref.zip"
+    outputs:
+      - "assets/dacoref/CDT_coref.conllu"
+      - "assets/dacoref/CDT_train_ids.json"
+      - "assets/dacoref/CDT_dev_ids.json"
+      - "assets/dacoref/CDT_test_ids.json"
+
+# Preprocess DDT, i.e.:
+# Create DDT assets and corpus directories
+# The python spacy convert commands are standard to project.yml.
+# Rename corpus files to conform to the requirements of combine().
+# Moving (actually copying, was unsure) assets files from ${vars.treebank}
+# to da_ddt (also requirement of combine.py)
+  - name: preprocess_ddt
+    help: "Convert the DDT data to spaCy's format"
+    script:
+      - "mkdir -p assets/da_ddt"
+      - "mkdir -p corpus/da_ddt"
+      - >-
+        python -m spacy convert
+        assets/${vars.treebank}/${vars.train_name}.conllu 
+        corpus/da_ddt/ 
+        --converter conllu 
+        --merge-subtokens
+      - >-
+        python -m spacy convert 
+        assets/${vars.treebank}/${vars.dev_name}.conllu 
+        corpus/da_ddt/ 
+        --converter conllu 
+        --merge-subtokens
+      - >-
+        python -m spacy convert 
+        assets/${vars.treebank}/${vars.test_name}.conllu
+        corpus/da_ddt/
+        --converter conllu 
+        --merge-subtokens
+      - "mv corpus/da_ddt/${vars.train_name}.spacy corpus/da_ddt/train.spacy"
+      - "mv corpus/da_ddt/${vars.dev_name}.spacy corpus/da_ddt/dev.spacy"
+      - "mv corpus/da_ddt/${vars.test_name}.spacy corpus/da_ddt/test.spacy"
+      - "cp assets/${vars.treebank}/${vars.train_name}.conllu assets/da_ddt/train.conllu"
+      - "cp assets/${vars.treebank}/${vars.dev_name}.conllu assets/da_ddt/dev.conllu"
+      - "cp assets/${vars.treebank}/${vars.test_name}.conllu assets/da_ddt/test.conllu"
+    deps:
+      - "assets/${vars.treebank}/${vars.train_name}.conllu"
+      - "assets/${vars.treebank}/${vars.dev_name}.conllu"
+      - "assets/${vars.treebank}/${vars.test_name}.conllu"
+    outputs:
+      - "corpus/da_ddt/train.spacy"
+      - "corpus/da_ddt/dev.spacy"
+      - "corpus/da_ddt/test.spacy"
+      - "assets/da_ddt/train.conllu"
+      - "assets/da_ddt/dev.conllu"
+      - "assets/da_ddt/test.conllu"
+
+# preprocess DaNE
+# Pretty standard project.yml code
+  - name: preprocess_dane
+    help: "Convert the DaNE data to spaCy's format"
+    script:
+          - "mkdir -p corpus/dane"
+          - >-
+            python -m spacy convert
+            assets/dane/train.conllu 
+            corpus/dane/ 
+            --converter conllu 
+            --merge-subtokens
+          - >-
+            python -m spacy convert 
+            assets/dane/dev.conllu 
+            corpus/dane/ 
+            --converter conllu 
+            --merge-subtokens
+          - >-
+            python -m spacy convert 
+            assets/dane/test.conllu
+            corpus/dane/
+            --converter conllu 
+            --merge-subtokens
+    deps:
+      - "assets/dane/train.conllu"
+      - "assets/dane/dev.conllu"
+      - "assets/dane/test.conllu"
+    outputs:
+      - "corpus/dane/train.spacy"
+      - "corpus/dane/dev.spacy"
+      - "corpus/dane/test.spacy"
+
+# command for running first create_ddt_compatible_splits_for_cdt.py
+# and then combine.py. But there's no splits for data.spacy?
+  - name: combine
+    help: ""
+    script:
+      - "python scripts/create_ddt_compatible_splits_for_cdt.py"
+      - "python scripts/combine.py"
+    deps:
+      # ddt
+      - "corpus/da_ddt/train.spacy"
+      - "corpus/da_ddt/dev.spacy"
+      - "corpus/da_ddt/test.spacy"
+      # dane
+      - "corpus/dane/train.spacy"
+      - "corpus/dane/dev.spacy"
+      - "corpus/dane/test.spacy"
+      # cdt
+      - "assets/dacoref/CDT_coref.conllu"
+      - "assets/dacoref/CDT_train_ids.json"
+      - "assets/dacoref/CDT_dev_ids.json"
+      - "assets/dacoref/CDT_test_ids.json"
+    outputs:
+      - "assets/CDT_ddt_compatible_splits.json"
+      - "corpus/cdt/train.spacy" # only data in CDT
+      - "corpus/cdt/dev.spacy" # only data in CDT
+      - "corpus/cdt/test.spacy" # only data in CDT
+      - "corpus/cdt_ddt/data.spacy" # think this contains ALL data (DDT/DaNE sentences that don't appear in CDT), but has no splits??
+
+  - name: train
+    help: "Train ${vars.corpus}"
+    script:
+      - >-
+        python -m spacy train 
+        configs/${vars.config}.cfg
+        --output training/${vars.corpus}
+        --gpu-id ${vars.gpu} 
+        --paths.train corpus/${vars.corpus}/train.spacy 
+        --paths.dev corpus/${vars.corpus}/dev.spacy 
+        --nlp.lang=${vars.lang}
+    deps:
+      - "corpus/${vars.corpus}/train.spacy"
+      - "corpus/${vars.corpus}/dev.spacy"
+      - "configs/${vars.config}.cfg"
+    outputs:
+      - "training/${vars.corpus}/model-best"
+
+  - name: evaluate
+    help: "Evaluate on the test data and save the metrics"
+    script:
+      - >-
+        python -m spacy evaluate 
+        ./training/${vars.corpus}/model-best 
+        ./corpus/${vars.corpus}/test.spacy 
+        --output ./metrics/${vars.corpus}.json 
+        --gpu-id ${vars.gpu}
+    deps:
+      - "training/${vars.corpus}/model-best"
+      - "corpus/${vars.corpus}/test.spacy"
+    outputs:
+      - "metrics/${vars.corpus}.json"
+
+  - name: package
+    help: "Package the trained model so it can be installed"
+    script:
+      - >-
+        python -m spacy package 
+        training/${vars.corpus}/model-best packages 
+        --name ${vars.package_name} 
+        --version ${vars.package_version}
+        --force
+    deps:
+      - "training/${vars.corpus}/model-best"
+    outputs_no_cache:
+      - "packages/${vars.lang}_${vars.package_name}-${vars.package_version}/dist/en_${vars.package_name}-${vars.package_version}.tar.gz"
+
+  - name: clean
+    help: "Remove intermediate files"
+    script:
+      - "rm -rf training/*"
+      - "rm -rf metrics/*"
+      - "rm -rf corpus/*"    

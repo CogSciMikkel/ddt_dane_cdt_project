@@ -1,0 +1,157 @@
+prepare_dane:
+  cmd: python -m weasel run prepare_dane
+  script:
+    - unzip assets/dane.zip -d assets/dane
+    - mv assets/dane/ddt.train.conllu assets/dane/train.conllu
+    - mv assets/dane/ddt.test.conllu assets/dane/test.conllu
+    - mv assets/dane/ddt.dev.conllu assets/dane/dev.conllu
+  deps:
+    - path: assets/dane.zip
+      md5: 50424ab9456ca5065702404e6df69e2f
+  outs:
+    - path: assets/dane/train.conllu
+      md5: 56ed5ceb42bc2c7c98403d20b4801db1
+    - path: assets/dane/dev.conllu
+      md5: 0c0057d571b284c855799a9b52b8288c
+    - path: assets/dane/test.conllu
+      md5: fcd2ac2d1a85fc2424483ca6a2ec38e6
+prepare_dacoref:
+  cmd: python -m weasel run prepare_dacoref
+  script:
+    - unzip assets/dacoref.zip -d assets/dacoref
+  deps:
+    - path: assets/dacoref.zip
+      md5: e6f2707f4f600a0d357dc7afa1b01f92
+  outs:
+    - path: assets/dacoref/CDT_coref.conllu
+      md5: fb39f7836aabc72b65805847a89336d3
+    - path: assets/dacoref/CDT_train_ids.json
+      md5: 6c7ca5df88ceac49b1fa40ca53ad6b6b
+    - path: assets/dacoref/CDT_dev_ids.json
+      md5: c75a12e06d2f530374fff3b52e7b959a
+    - path: assets/dacoref/CDT_test_ids.json
+      md5: 7416eca44cb88fdd2906bd23fafec7db
+preprocess_ddt:
+  cmd: python -m weasel run preprocess_ddt
+  script:
+    - mkdir -p assets/da_ddt
+    - mkdir -p corpus/da_ddt
+    - python -m spacy convert assets/UD_Danish-DDT/da_ddt-ud-train.conllu  corpus/da_ddt/  --converter
+      conllu  --merge-subtokens
+    - python -m spacy convert  assets/UD_Danish-DDT/da_ddt-ud-dev.conllu  corpus/da_ddt/  --converter
+      conllu  --merge-subtokens
+    - python -m spacy convert  assets/UD_Danish-DDT/da_ddt-ud-test.conllu corpus/da_ddt/
+      --converter conllu  --merge-subtokens
+    - mv corpus/da_ddt/da_ddt-ud-train.spacy corpus/da_ddt/train.spacy
+    - mv corpus/da_ddt/da_ddt-ud-dev.spacy corpus/da_ddt/dev.spacy
+    - mv corpus/da_ddt/da_ddt-ud-test.spacy corpus/da_ddt/test.spacy
+    - cp assets/UD_Danish-DDT/da_ddt-ud-train.conllu assets/da_ddt/train.conllu
+    - cp assets/UD_Danish-DDT/da_ddt-ud-dev.conllu assets/da_ddt/dev.conllu
+    - cp assets/UD_Danish-DDT/da_ddt-ud-test.conllu assets/da_ddt/test.conllu
+  deps:
+    - path: assets/UD_Danish-DDT/da_ddt-ud-train.conllu
+      md5: c80b9a9eb7677ea3dc56ae87056b5454
+    - path: assets/UD_Danish-DDT/da_ddt-ud-dev.conllu
+      md5: 1feb5aa4179b831f1d01e827edcc3a30
+    - path: assets/UD_Danish-DDT/da_ddt-ud-test.conllu
+      md5: f767e3584fd04fed55a363ec421a851b
+  outs:
+    - path: corpus/da_ddt/train.spacy
+      md5: 4cac483eb7b6b680fad046ba7121bd27
+    - path: corpus/da_ddt/dev.spacy
+      md5: 7374ef9932a6125544f4bf495bc1182d
+    - path: corpus/da_ddt/test.spacy
+      md5: b90dd42f6bd7abd64cd7049128817329
+    - path: assets/da_ddt/train.conllu
+      md5: c80b9a9eb7677ea3dc56ae87056b5454
+    - path: assets/da_ddt/dev.conllu
+      md5: 1feb5aa4179b831f1d01e827edcc3a30
+    - path: assets/da_ddt/test.conllu
+      md5: f767e3584fd04fed55a363ec421a851b
+preprocess_dane:
+  cmd: python -m weasel run preprocess_dane
+  script:
+    - mkdir -p corpus/dane
+    - python -m spacy convert assets/dane/train.conllu  corpus/dane/  --converter
+      conllu  --merge-subtokens
+    - python -m spacy convert  assets/dane/dev.conllu  corpus/dane/  --converter conllu  --merge-subtokens
+    - python -m spacy convert  assets/dane/test.conllu corpus/dane/ --converter conllu  --merge-subtokens
+  deps:
+    - path: assets/dane/train.conllu
+      md5: 56ed5ceb42bc2c7c98403d20b4801db1
+    - path: assets/dane/dev.conllu
+      md5: 0c0057d571b284c855799a9b52b8288c
+    - path: assets/dane/test.conllu
+      md5: fcd2ac2d1a85fc2424483ca6a2ec38e6
+  outs:
+    - path: corpus/dane/train.spacy
+      md5: ee6efd3e2e25c7cd00c2de3d3223690d
+    - path: corpus/dane/dev.spacy
+      md5: 873fce5040aa2ee0f959ff89e83b3cea
+    - path: corpus/dane/test.spacy
+      md5: 2d8d318695d7e43766287a9f8e756d01
+combine:
+  cmd: python -m weasel run combine
+  script:
+    - python scripts/create_ddt_compatible_splits_for_cdt.py
+    - python scripts/combine.py
+  deps:
+    - path: corpus/da_ddt/train.spacy
+      md5: 4cac483eb7b6b680fad046ba7121bd27
+    - path: corpus/da_ddt/dev.spacy
+      md5: 7374ef9932a6125544f4bf495bc1182d
+    - path: corpus/da_ddt/test.spacy
+      md5: b90dd42f6bd7abd64cd7049128817329
+    - path: corpus/dane/train.spacy
+      md5: ee6efd3e2e25c7cd00c2de3d3223690d
+    - path: corpus/dane/dev.spacy
+      md5: 873fce5040aa2ee0f959ff89e83b3cea
+    - path: corpus/dane/test.spacy
+      md5: 2d8d318695d7e43766287a9f8e756d01
+    - path: assets/dacoref/CDT_coref.conllu
+      md5: fb39f7836aabc72b65805847a89336d3
+    - path: assets/dacoref/CDT_train_ids.json
+      md5: 6c7ca5df88ceac49b1fa40ca53ad6b6b
+    - path: assets/dacoref/CDT_dev_ids.json
+      md5: c75a12e06d2f530374fff3b52e7b959a
+    - path: assets/dacoref/CDT_test_ids.json
+      md5: 7416eca44cb88fdd2906bd23fafec7db
+  outs:
+    - path: assets/CDT_ddt_compatible_splits.json
+      md5: b47e7807901ff26bb609ecc1fe2285a2
+    - path: corpus/cdt/train.spacy
+      md5: f8609b1681a087b911c908842aa2ad85
+    - path: corpus/cdt/dev.spacy
+      md5: de40e8b46d611ee6e7bcf91ba3581d7e
+    - path: corpus/cdt/test.spacy
+      md5: 925faf5f42b447991bb62460fa5b9879
+    - path: corpus/cdt_ddt/data.spacy
+      md5: 3a2a5f2e818ab6788088c4bf1961947e
+train:
+  cmd: python -m weasel run train
+  script:
+    - python -m spacy train  configs/default.cfg --output training/cdt --gpu-id -1  --paths.train
+      corpus/cdt/train.spacy  --paths.dev corpus/cdt/dev.spacy  --nlp.lang=da
+  deps:
+    - path: corpus/cdt/train.spacy
+      md5: f8609b1681a087b911c908842aa2ad85
+    - path: corpus/cdt/dev.spacy
+      md5: de40e8b46d611ee6e7bcf91ba3581d7e
+    - path: configs/default.cfg
+      md5: 584e27ccf37b909ea8d097e312389da6
+  outs:
+    - path: training/cdt/model-best
+      md5: 5745671dd1a07c598cd7e6db94da1be5
+evaluate:
+  cmd: python -m weasel run evaluate
+  script:
+    - python -m spacy evaluate  ./training/cdt/model-best  ./corpus/cdt/test.spacy  --output
+      ./metrics/cdt.json  --gpu-id -1
+  deps:
+    - path: training/cdt/model-best
+      md5: 5745671dd1a07c598cd7e6db94da1be5
+    - path: corpus/cdt/test.spacy
+      md5: 925faf5f42b447991bb62460fa5b9879
+  outs:
+    - path: metrics/cdt.json
+      md5: 527466897d4708eb61fe8518b496373d
