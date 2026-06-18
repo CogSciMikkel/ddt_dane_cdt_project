@@ -155,3 +155,15 @@ evaluate:
   outs:
     - path: metrics/cdt.json
       md5: 527466897d4708eb61fe8518b496373d
+prepare_gpu:
+  cmd: python -m weasel run prepare_gpu
+  script:
+    - python scripts/prepare_gpu.py
+  deps: []
+  outs: []
+verify_gpu:
+  cmd: python -m weasel run verify_gpu
+  script:
+    - python scripts/verify_gpu.py
+  deps: []
+  outs: []

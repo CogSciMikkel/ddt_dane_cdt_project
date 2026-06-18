@@ -19,7 +19,7 @@ vars:
   test_name: "da_ddt-ud-test"
   package_name: "ddt_dane_cdt"
   package_version: "0.0.0"
-  gpu: -1
+  gpu: 0 # set to -1 to disable GPU (check verify_gpu command)
 
 # These are the directories that the project needs. The project CLI will make
 # sure that they always exist.
@@ -50,11 +50,17 @@ workflows:
     - evaluate
     - package
 
+commands:
+# check if GPU is available
+  - name: verify_gpu
+    help: "Check if GPU is available and set GPU accordingly"
+    script:
+      - "python scripts/verify_gpu.py"
+
 # prepare DaNE for preprocessing, i.e.:
 # unzipping the .zip file
 # renaming the unzipped files 
 # using mv so as to conform to the requirements of combine()
-commands:
   - name: prepare_dane
     help: "Prepare DaNE data for preprocessing"
     script:

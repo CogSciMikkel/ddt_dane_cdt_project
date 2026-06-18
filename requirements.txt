@@ -1,0 +1,2 @@
+spacy
+cupy-cuda13x[ctk]
