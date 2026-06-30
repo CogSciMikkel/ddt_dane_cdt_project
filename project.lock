@@ -130,31 +130,31 @@ combine:
 train:
   cmd: python -m weasel run train
   script:
-    - python -m spacy train  configs/default.cfg --output training/cdt --gpu-id -1  --paths.train
-      corpus/cdt/train.spacy  --paths.dev corpus/cdt/dev.spacy  --nlp.lang=da
+    - python -m spacy train  configs/default.cfg --output training/cdt_ddt --gpu-id
+      -1  --paths.train corpus/cdt_ddt/train.spacy  --paths.dev corpus/cdt_ddt/dev.spacy  --nlp.lang=da
   deps:
-    - path: corpus/cdt/train.spacy
-      md5: f8609b1681a087b911c908842aa2ad85
-    - path: corpus/cdt/dev.spacy
-      md5: de40e8b46d611ee6e7bcf91ba3581d7e
+    - path: corpus/cdt_ddt/train.spacy
+      md5: 41f14c28f44fae87e6d7feb7ec5fc256
+    - path: corpus/cdt_ddt/dev.spacy
+      md5: 52fced9423635ff41bd1d7a2a4e7c08e
     - path: configs/default.cfg
       md5: 584e27ccf37b909ea8d097e312389da6
   outs:
-    - path: training/cdt/model-best
-      md5: 5745671dd1a07c598cd7e6db94da1be5
+    - path: training/cdt_ddt/model-best
+      md5: b3367aa70250837f55c8f570e22df819
 evaluate:
   cmd: python -m weasel run evaluate
   script:
-    - python -m spacy evaluate  ./training/cdt/model-best  ./corpus/cdt/test.spacy  --output
-      ./metrics/cdt.json  --gpu-id -1
+    - python -m spacy evaluate  ./training/cdt_ddt/model-best  ./corpus/cdt_ddt/test.spacy  --output
+      ./metrics/cdt_ddt.json  --gpu-id -1
   deps:
-    - path: training/cdt/model-best
-      md5: 5745671dd1a07c598cd7e6db94da1be5
-    - path: corpus/cdt/test.spacy
-      md5: 925faf5f42b447991bb62460fa5b9879
+    - path: training/cdt_ddt/model-best
+      md5: b3367aa70250837f55c8f570e22df819
+    - path: corpus/cdt_ddt/test.spacy
+      md5: 230f52c7df0a868358848bb6631a98dc
   outs:
-    - path: metrics/cdt.json
-      md5: 527466897d4708eb61fe8518b496373d
+    - path: metrics/cdt_ddt.json
+      md5: 7edba4d97ec46a5adf56b5e9023d263e
 prepare_gpu:
   cmd: python -m weasel run prepare_gpu
   script:
@@ -167,3 +167,23 @@ verify_gpu:
     - python scripts/verify_gpu.py
   deps: []
   outs: []
+merge_cdt_ddt:
+  cmd: python -m weasel run merge_cdt_ddt
+  script:
+    - python scripts/merge_ddt_sents_with_cdt.py
+  deps:
+    - path: corpus/cdt_ddt/data.spacy
+      md5: 3a2a5f2e818ab6788088c4bf1961947e
+    - path: corpus/cdt/train.spacy
+      md5: f8609b1681a087b911c908842aa2ad85
+    - path: corpus/cdt/dev.spacy
+      md5: de40e8b46d611ee6e7bcf91ba3581d7e
+    - path: corpus/cdt/test.spacy
+      md5: 925faf5f42b447991bb62460fa5b9879
+  outs:
+    - path: corpus/cdt_ddt/train.spacy
+      md5: 41f14c28f44fae87e6d7feb7ec5fc256
+    - path: corpus/cdt_ddt/dev.spacy
+      md5: 52fced9423635ff41bd1d7a2a4e7c08e
+    - path: corpus/cdt_ddt/test.spacy
+      md5: 230f52c7df0a868358848bb6631a98dc

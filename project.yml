@@ -13,13 +13,13 @@ vars:
   config: "default"
   lang: "da"
   treebank: "UD_Danish-DDT"
-  corpus: "cdt"
+  corpus: "cdt_ddt"
   train_name: "da_ddt-ud-train"
   dev_name: "da_ddt-ud-dev"
   test_name: "da_ddt-ud-test"
   package_name: "ddt_dane_cdt"
   package_version: "0.0.0"
-  gpu: 0 # set to -1 to disable GPU (check verify_gpu command)
+  gpu: -1 # set to -1 to disable GPU (check verify_gpu command)
 
 # These are the directories that the project needs. The project CLI will make
 # sure that they always exist.
@@ -46,9 +46,10 @@ workflows:
     - preprocess_dane
     - preprocess_ddt
     - combine
+    - merge_cdt_ddt
     - train
     - evaluate
-    - package
+#    - package
 
 commands:
 # check if GPU is available
@@ -199,6 +200,20 @@ commands:
       - "corpus/cdt/dev.spacy" # only data in CDT
       - "corpus/cdt/test.spacy" # only data in CDT
       - "corpus/cdt_ddt/data.spacy" # think this contains ALL data (DDT/DaNE sentences that don't appear in CDT), but has no splits??
+
+  - name: merge_cdt_ddt
+    help: "Merge CDT data with single-sentence DDT data"
+    script:
+      - "python scripts/merge_ddt_sents_with_cdt.py"
+    deps:
+      - "corpus/cdt_ddt/data.spacy"
+      - "corpus/cdt/train.spacy"
+      - "corpus/cdt/dev.spacy"
+      - "corpus/cdt/test.spacy"
+    outputs:
+      - "corpus/cdt_ddt/train.spacy"
+      - "corpus/cdt_ddt/dev.spacy"
+      - "corpus/cdt_ddt/test.spacy"
 
   - name: train
     help: "Train ${vars.corpus}"
