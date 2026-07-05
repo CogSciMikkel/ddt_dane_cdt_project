@@ -10,10 +10,11 @@ description: >
 
 # Variables can be referenced across the project.yml using ${vars.var_name}
 vars:
-  config: "default"
+  config: "dacy_tiny"
   lang: "da"
   treebank: "UD_Danish-DDT"
   corpus: "cdt_ddt"
+  model: "dacy-tiny"
   train_name: "da_ddt-ud-train"
   dev_name: "da_ddt-ud-dev"
   test_name: "da_ddt-ud-test"
@@ -37,10 +38,14 @@ assets:
     url: "http://danlp-downloads.alexandra.dk/datasets/ddt.zip"
   - dest: "assets/dacoref.zip"
     url: "http://danlp-downloads.alexandra.dk/datasets/dacoref.zip"
+  - dest: "assets/da_core_news_lg-3.8.0-py3-none-any.whl"
+    url: "https://github.com/explosion/spacy-models/releases/download/da_core_news_lg-3.8.0/da_core_news_lg-3.8.0-py3-none-any.whl"
+
 
 # tried to imitate the workflow of combine.py
 workflows:
   all:
+    - install_vectors
     - prepare_dane
     - prepare_dacoref
     - preprocess_dane
@@ -57,6 +62,17 @@ commands:
     help: "Check if GPU is available and set GPU accordingly"
     script:
       - "python scripts/verify_gpu.py"
+
+  - name: install_vectors
+    help: "Installs pretrained vectors from assets/da_core_news_lg"
+    script:
+      - "pip install assets/da_core_news_lg-3.8.0-py3-none-any.whl --no-deps"
+      - "touch assets/.da_core_news_lg_installed" # for spacy to check if reinstall is needed
+    deps:
+      - "assets/da_core_news_lg-3.8.0-py3-none-any.whl"
+    outputs:
+      - "assets/.da_core_news_lg_installed"
+
 
 # prepare DaNE for preprocessing, i.e.:
 # unzipping the .zip file
@@ -176,7 +192,7 @@ commands:
 # command for running first create_ddt_compatible_splits_for_cdt.py
 # and then combine.py. But there's no splits for data.spacy?
   - name: combine
-    help: ""
+    help: "Combine CDT and DDT data for training"
     script:
       - "python scripts/create_ddt_compatible_splits_for_cdt.py"
       - "python scripts/combine.py"
@@ -216,12 +232,12 @@ commands:
       - "corpus/cdt_ddt/test.spacy"
 
   - name: train
-    help: "Train ${vars.corpus}"
+    help: "Train ${vars.model} on ${vars.corpus} data"
     script:
       - >-
         python -m spacy train 
         configs/${vars.config}.cfg
-        --output training/${vars.corpus}
+        --output training/${vars.model}
         --gpu-id ${vars.gpu} 
         --paths.train corpus/${vars.corpus}/train.spacy 
         --paths.dev corpus/${vars.corpus}/dev.spacy 
@@ -230,41 +246,42 @@ commands:
       - "corpus/${vars.corpus}/train.spacy"
       - "corpus/${vars.corpus}/dev.spacy"
       - "configs/${vars.config}.cfg"
+      - "assets/.da_core_news_lg_installed"
     outputs:
-      - "training/${vars.corpus}/model-best"
+      - "training/${vars.model}/model-best"
 
   - name: evaluate
     help: "Evaluate on the test data and save the metrics"
     script:
       - >-
         python -m spacy evaluate 
-        ./training/${vars.corpus}/model-best 
+        ./training/${vars.model}/model-best 
         ./corpus/${vars.corpus}/test.spacy 
-        --output ./metrics/${vars.corpus}.json 
+        --output ./metrics/${vars.model}.json 
         --gpu-id ${vars.gpu}
     deps:
-      - "training/${vars.corpus}/model-best"
+      - "training/${vars.model}/model-best"
       - "corpus/${vars.corpus}/test.spacy"
     outputs:
-      - "metrics/${vars.corpus}.json"
+      - "metrics/${vars.model}.json"
 
   - name: package
     help: "Package the trained model so it can be installed"
     script:
       - >-
         python -m spacy package 
-        training/${vars.corpus}/model-best packages 
-        --name ${vars.package_name} 
+        training/${vars.model}/model-best packages 
+        --name ${vars.model}_${vars.package_name} 
         --version ${vars.package_version}
         --force
     deps:
-      - "training/${vars.corpus}/model-best"
+      - "training/${vars.model}/model-best"
     outputs_no_cache:
-      - "packages/${vars.lang}_${vars.package_name}-${vars.package_version}/dist/en_${vars.package_name}-${vars.package_version}.tar.gz"
+      - "packages/${vars.lang}_${vars.model}_${vars.package_name}-${vars.package_version}/dist/${vars.lang}_${vars.model}_${vars.package_name}-${vars.package_version}.tar.gz"
 
   - name: clean
     help: "Remove intermediate files"
     script:
       - "rm -rf training/*"
       - "rm -rf metrics/*"
-      - "rm -rf corpus/*"    
+      - "rm -rf corpus/*"

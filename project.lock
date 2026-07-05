@@ -130,31 +130,33 @@ combine:
 train:
   cmd: python -m weasel run train
   script:
-    - python -m spacy train  configs/default.cfg --output training/cdt_ddt --gpu-id
+    - python -m spacy train  configs/dacy_tiny.cfg --output training/dacy-tiny --gpu-id
       -1  --paths.train corpus/cdt_ddt/train.spacy  --paths.dev corpus/cdt_ddt/dev.spacy  --nlp.lang=da
   deps:
     - path: corpus/cdt_ddt/train.spacy
       md5: 41f14c28f44fae87e6d7feb7ec5fc256
     - path: corpus/cdt_ddt/dev.spacy
       md5: 52fced9423635ff41bd1d7a2a4e7c08e
-    - path: configs/default.cfg
-      md5: 584e27ccf37b909ea8d097e312389da6
+    - path: configs/dacy_tiny.cfg
+      md5: ca1f97873d4148cb43dfebc0d6de8e2a
+    - path: assets/.da_core_news_lg_installed
+      md5: d41d8cd98f00b204e9800998ecf8427e
   outs:
-    - path: training/cdt_ddt/model-best
-      md5: b3367aa70250837f55c8f570e22df819
+    - path: training/dacy-tiny/model-best
+      md5: 98cdb093e1b335c68d6431e7fcbfd598
 evaluate:
   cmd: python -m weasel run evaluate
   script:
-    - python -m spacy evaluate  ./training/cdt_ddt/model-best  ./corpus/cdt_ddt/test.spacy  --output
-      ./metrics/cdt_ddt.json  --gpu-id -1
+    - python -m spacy evaluate  ./training/dacy-tiny/model-best  ./corpus/cdt_ddt/test.spacy  --output
+      ./metrics/dacy-tiny.json  --gpu-id -1
   deps:
-    - path: training/cdt_ddt/model-best
-      md5: b3367aa70250837f55c8f570e22df819
+    - path: training/dacy-tiny/model-best
+      md5: 98cdb093e1b335c68d6431e7fcbfd598
     - path: corpus/cdt_ddt/test.spacy
       md5: 230f52c7df0a868358848bb6631a98dc
   outs:
-    - path: metrics/cdt_ddt.json
-      md5: 7edba4d97ec46a5adf56b5e9023d263e
+    - path: metrics/dacy-tiny.json
+      md5: 9512e26ca571ed8211f5324db66b98c7
 prepare_gpu:
   cmd: python -m weasel run prepare_gpu
   script:
@@ -187,3 +189,14 @@ merge_cdt_ddt:
       md5: 52fced9423635ff41bd1d7a2a4e7c08e
     - path: corpus/cdt_ddt/test.spacy
       md5: 230f52c7df0a868358848bb6631a98dc
+install_vectors:
+  cmd: python -m weasel run install_vectors
+  script:
+    - pip install assets/da_core_news_lg-3.8.0-py3-none-any.whl --no-deps
+    - touch assets/.da_core_news_lg_installed
+  deps:
+    - path: assets/da_core_news_lg-3.8.0-py3-none-any.whl
+      md5: df52d10a14e7ed04d399f136d72d7389
+  outs:
+    - path: assets/.da_core_news_lg_installed
+      md5: d41d8cd98f00b204e9800998ecf8427e
