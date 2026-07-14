@@ -1,2 +1,3 @@
 spacy
+spacy-transformers
 cupy-cuda13x[ctk]

@@ -10,17 +10,17 @@ description: >
 
 # Variables can be referenced across the project.yml using ${vars.var_name}
 vars:
-  config: "dacy_tiny"
+  config: "dacy_small"
   lang: "da"
   treebank: "UD_Danish-DDT"
   corpus: "cdt_ddt"
-  model: "dacy-tiny"
+  model: "dacy-small"
   train_name: "da_ddt-ud-train"
   dev_name: "da_ddt-ud-dev"
   test_name: "da_ddt-ud-test"
   package_name: "ddt_dane_cdt"
   package_version: "0.0.0"
-  gpu: -1 # set to -1 to disable GPU (check verify_gpu command)
+  gpu: 0 # set to -1 to disable GPU (check verify_gpu command)
 
 # These are the directories that the project needs. The project CLI will make
 # sure that they always exist.
@@ -45,7 +45,7 @@ assets:
 # tried to imitate the workflow of combine.py
 workflows:
   all:
-    - install_vectors
+#    - install_vectors_lg
     - prepare_dane
     - prepare_dacoref
     - preprocess_dane
@@ -63,7 +63,7 @@ commands:
     script:
       - "python scripts/verify_gpu.py"
 
-  - name: install_vectors
+  - name: install_vectors_lg
     help: "Installs pretrained vectors from assets/da_core_news_lg"
     script:
       - "pip install assets/da_core_news_lg-3.8.0-py3-none-any.whl --no-deps"

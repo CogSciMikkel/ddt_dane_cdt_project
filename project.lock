@@ -130,33 +130,33 @@ combine:
 train:
   cmd: python -m weasel run train
   script:
-    - python -m spacy train  configs/dacy_tiny.cfg --output training/dacy-tiny --gpu-id
-      -1  --paths.train corpus/cdt_ddt/train.spacy  --paths.dev corpus/cdt_ddt/dev.spacy  --nlp.lang=da
+    - python -m spacy train  configs/dacy_small.cfg --output training/dacy-small --gpu-id
+      0  --paths.train corpus/cdt_ddt/train.spacy  --paths.dev corpus/cdt_ddt/dev.spacy  --nlp.lang=da
   deps:
     - path: corpus/cdt_ddt/train.spacy
       md5: 41f14c28f44fae87e6d7feb7ec5fc256
     - path: corpus/cdt_ddt/dev.spacy
       md5: 52fced9423635ff41bd1d7a2a4e7c08e
-    - path: configs/dacy_tiny.cfg
-      md5: ca1f97873d4148cb43dfebc0d6de8e2a
+    - path: configs/dacy_small.cfg
+      md5: dcf0934867d527c2bf504884b97e4651
     - path: assets/.da_core_news_lg_installed
       md5: d41d8cd98f00b204e9800998ecf8427e
   outs:
-    - path: training/dacy-tiny/model-best
-      md5: 98cdb093e1b335c68d6431e7fcbfd598
+    - path: training/dacy-small/model-best
+      md5: a6ee988e10a1d849fda5a1e2af508734
 evaluate:
   cmd: python -m weasel run evaluate
   script:
-    - python -m spacy evaluate  ./training/dacy-tiny/model-best  ./corpus/cdt_ddt/test.spacy  --output
-      ./metrics/dacy-tiny.json  --gpu-id -1
+    - python -m spacy evaluate  ./training/dacy-small/model-best  ./corpus/cdt_ddt/test.spacy  --output
+      ./metrics/dacy-small.json  --gpu-id 0
   deps:
-    - path: training/dacy-tiny/model-best
-      md5: 98cdb093e1b335c68d6431e7fcbfd598
+    - path: training/dacy-small/model-best
+      md5: a6ee988e10a1d849fda5a1e2af508734
     - path: corpus/cdt_ddt/test.spacy
       md5: 230f52c7df0a868358848bb6631a98dc
   outs:
-    - path: metrics/dacy-tiny.json
-      md5: 9512e26ca571ed8211f5324db66b98c7
+    - path: metrics/dacy-small.json
+      md5: d1b1989af547f83a7d083c774c218d9d
 prepare_gpu:
   cmd: python -m weasel run prepare_gpu
   script:
