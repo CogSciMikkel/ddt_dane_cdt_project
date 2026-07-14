@@ -1,0 +1,9 @@
+For dacy-small, I tried the following trf models:
+- electra-small-nordic (current default)
+- norbert3-xs
+- aelaectra-danish-electra-small-uncased
+- convbert-medium-small-da-cased
+
+I find electra to still be the best trf model of that size (<22M).
+
+14.07.2026
