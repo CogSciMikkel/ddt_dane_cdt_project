@@ -1,0 +1,6 @@
+spacy==3.8.14
+thinc==8.3.13
+spacy-transformers==1.4.0
+numpy<3
+click>=8.1,<9
+cupy-cuda12x==14.1.1

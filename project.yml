@@ -14,7 +14,7 @@ vars:
   lang: "da"
   treebank: "UD_Danish-DDT"
   corpus: "cdt_ddt"
-  model: "dacy-small"
+  model: "dacy-small-convbert-medium-small-da-cased"
   train_name: "da_ddt-ud-train"
   dev_name: "da_ddt-ud-dev"
   test_name: "da_ddt-ud-test"

@@ -2,3 +2,6 @@ assets
 corpus
 training
 packages
+.venv
+.venv-cuda13
+.venv-old
