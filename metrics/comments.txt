@@ -1,9 +1,11 @@
-For dacy-small, I tried the following trf models:
-- electra-small-nordic (current default)
-- norbert3-xs
-- aelaectra-danish-electra-small-uncased
-- convbert-medium-small-da-cased
+For dacy-small:
+- I find electra to still be the best trf model of that size (<22M).
 
-I find electra to still be the best trf model of that size (<22M).
+For dacy-medium:
+- DanskBERT best for NER.
+- ScandiBERT best for POS tagging/morphology and parsing.
 
-14.07.2026
+For dacy-large:
+- roberta-large-1160k is best.
+
+20.07.2026
