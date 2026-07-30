@@ -6,4 +6,4 @@ packages
 .venv-cuda13
 .venv-old
 env.txt
-__pycache__
+__pycache__dacy_wheels/
