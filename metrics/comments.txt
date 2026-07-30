@@ -1,5 +1,6 @@
 For dacy-small:
 - I find electra to still be the best trf model of that size (<22M).
+- dacy-small is consistently a little better than dacy-tiny.
 
 For dacy-medium:
 - DanskBERT best for NER.
@@ -8,4 +9,4 @@ For dacy-medium:
 For dacy-large:
 - roberta-large-1160k is best.
 
-20.07.2026
+22.07.2026

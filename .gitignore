@@ -6,3 +6,4 @@ packages
 .venv-cuda13
 .venv-old
 env.txt
+__pycache__
