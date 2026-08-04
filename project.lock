@@ -120,13 +120,13 @@ combine:
     - path: assets/CDT_ddt_compatible_splits.json
       md5: b47e7807901ff26bb609ecc1fe2285a2
     - path: corpus/cdt/train.spacy
-      md5: f8609b1681a087b911c908842aa2ad85
+      md5: 34bcfd22860906ec57d7e31e878d3491
     - path: corpus/cdt/dev.spacy
-      md5: de40e8b46d611ee6e7bcf91ba3581d7e
+      md5: ec1d808b5081c80a9d90440495cd3e8e
     - path: corpus/cdt/test.spacy
-      md5: 925faf5f42b447991bb62460fa5b9879
+      md5: 915d311348b8ba4d4bd30c2b5aa8ff90
     - path: corpus/cdt_ddt/data.spacy
-      md5: 3a2a5f2e818ab6788088c4bf1961947e
+      md5: 57322311250071779b692529a3e0e391
 train:
   cmd: python -m weasel run train
   script:
@@ -175,20 +175,20 @@ merge_cdt_ddt:
     - python scripts/merge_ddt_sents_with_cdt.py
   deps:
     - path: corpus/cdt_ddt/data.spacy
-      md5: 3a2a5f2e818ab6788088c4bf1961947e
+      md5: 57322311250071779b692529a3e0e391
     - path: corpus/cdt/train.spacy
-      md5: f8609b1681a087b911c908842aa2ad85
+      md5: 34bcfd22860906ec57d7e31e878d3491
     - path: corpus/cdt/dev.spacy
-      md5: de40e8b46d611ee6e7bcf91ba3581d7e
+      md5: ec1d808b5081c80a9d90440495cd3e8e
     - path: corpus/cdt/test.spacy
-      md5: 925faf5f42b447991bb62460fa5b9879
+      md5: 915d311348b8ba4d4bd30c2b5aa8ff90
   outs:
     - path: corpus/cdt_ddt/train.spacy
-      md5: 41f14c28f44fae87e6d7feb7ec5fc256
+      md5: 64bd2df1765c86375b89127d922a1d64
     - path: corpus/cdt_ddt/dev.spacy
-      md5: 52fced9423635ff41bd1d7a2a4e7c08e
+      md5: 3438c1b3a1bfb3f882e44a98adfd4fa2
     - path: corpus/cdt_ddt/test.spacy
-      md5: 230f52c7df0a868358848bb6631a98dc
+      md5: 62a0906fbb9f753de948c6fed26f95bb
 install_vectors:
   cmd: python -m weasel run install_vectors
   script:

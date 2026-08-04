@@ -51,7 +51,7 @@ for split, file in zip(["train", "dev", "test"], cdt_files):
     db = DocBin().from_disk(file)
     docs = list(db.get_docs(nlp.vocab))
     docs = docs + remaining_splits[split]
-    combined_db = DocBin()
+    combined_db = DocBin(store_user_data=True)
     for doc in docs:
         combined_db.add(doc)
     combined_db.to_disk(f"/work/training_practice/ddt_dane_cdt_project/corpus/cdt_ddt/{split}.spacy")

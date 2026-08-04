@@ -52,8 +52,8 @@ workflows:
     - preprocess_ddt
     - combine
     - merge_cdt_ddt
-    - train
-    - evaluate
+#    - train
+#    - evaluate
 #    - package
 
 commands:

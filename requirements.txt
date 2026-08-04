@@ -3,3 +3,4 @@ spacy-transformers
 cupy-cuda12x[ctk]==14.1.1
 click>=8.1,<9
 huggingface_hub
+conllu

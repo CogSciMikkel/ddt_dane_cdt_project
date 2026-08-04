@@ -128,7 +128,14 @@ def add_dane_to_ddt(ddt, dane):
     for split in ["train", "dev", "test"]:
         assert len(ddt[split]) == len(dane[split])
         for doc, dane_doc in zip(ddt[split], dane[split]):
+            
             # assert doc.text.strip() == dane_doc.text.strip() <-- Removed to not crash script because of whitespace misalignment. Mikkel
+            # Claude recommended this check instead due to benign whitespace misalignment (see diagnose_dane_to_ddt_mismatch.py):
+            assert [t.text for t in doc] == [t.text for t in dane_doc], (
+                f"token mismatch at {doc._.sent_id}: "
+                f"{[t.text for t in doc]!r} vs {[t.text for t in dane_doc]!r}"
+            )
+
             assert doc._.sent_id == dane_doc._.sent_id
             # convert dane ents to ddt ents
             ents = [Span(doc, e.start, e.end, label=e.label_) for e in dane_doc.ents]
@@ -306,7 +313,7 @@ doc_ids_cdt = {sent[0]["doc_id"] for sent in cdt_sentences}
 assert len(doc_ids_cdt - doc_ids) == 0
 
 docs = combine_docs(cdt_sentences, ddt_dane)
-#docs = add_coreference(cdt_sentences, docs)
+docs = add_coreference(cdt_sentences, docs)
 #docs = add_qid(docs)
 
 doc_bin = DocBin(store_user_data=True)
