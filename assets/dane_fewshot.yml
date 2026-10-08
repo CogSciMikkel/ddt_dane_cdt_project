@@ -1,0 +1,137 @@
+# Few-shot examples for spacy.NER.v3 — generated skeleton.
+# Spans are gold; `==NONE==` spans are heuristic distractors, VERIFY THEM.
+# Fill in every `reason` field before using this file.
+
+- text: "- 75 øre stykket, siger Sally og ser ud i luften."
+  spans:
+    - text: "Sally"
+      is_entity: true
+      label: "PER"
+      reason: "is a given name referring to a specific person"  # TODO (PER)
+    - text: "75 øre"
+      is_entity: false
+      label: "==NONE=="
+      reason: "is a monetary amount; DaNE annotates only PER, LOC, ORG and MISC, not money or quantities"
+
+- text: "Som så mange andre har han boet i Taastrupgård siden han kom hertil."
+  spans:
+    - text: "Taastrupgård"
+      is_entity: true
+      label: "LOC"
+      reason: "is the proper name of a specific residential area, i.e. a named place"  # TODO (LOC)
+
+- text: "Han afløser direktør Frederik Teisen, der har stået i spidsen for selskabet siden starten i 1964, men nu går på pension."
+  spans:
+    - text: "Frederik Teisen"
+      is_entity: true
+      label: "PER"
+      reason: "is a full personal name; the preceding job title is not part of the span"  # TODO (PER)
+
+- text: "B.T. har forelagt artiklen for advokat J. Quade Andersen, Herning, der med sin indgriben forhindrede, at Mona Lisa blev fjernet fra sin far og mor."
+  spans:
+    - text: "B.T."
+      is_entity: true
+      label: "ORG"
+      reason: "is the name of a newspaper; media outlets are organizations, and the abbreviation with periods is part of the name"  # TODO (ORG)
+    - text: "J. Quade Andersen"
+      is_entity: true
+      label: "PER"
+      reason: "is a personal name including an initial; the preceding job title is not part of the span"  # TODO (PER)
+    - text: "Herning"
+      is_entity: true
+      label: "LOC"
+      reason: "is the name of a town, here identifying where the person practises"  # TODO (LOC)
+    - text: "Mona Lisa"
+      is_entity: true
+      label: "PER"
+      reason: "refers to a person here — a child, not the painting; context decides the label"  # TODO (PER)
+
+- text: "FN-kilder siger, at en lufthavnsbygning er blevet ødelagt."
+  spans:
+    - text: "FN-kilder"
+      is_entity: true
+      label: "MISC"
+      reason: "is a compound whose first part is an organization; the whole compound is MISC, not just the ORG part"  # TODO (MISC)
+
+- text: "Pios første fremtræden i 1871 var direkte forårsaget af den store Kommunardopstand i Paris det samme år."
+  spans:
+    - text: "Pios"
+      is_entity: true
+      label: "PER"
+      reason: "is a surname in the genitive; the inflectional -s is included in the span"  # TODO (PER)
+    - text: "Kommunardopstand"
+      is_entity: true
+      label: "MISC"
+      reason: "is a named historical event, and events are annotated as MISC"  # TODO (MISC)
+    - text: "Paris"
+      is_entity: true
+      label: "LOC"
+      reason: "is the name of a city"  # TODO (LOC)
+
+- text: "I dag er hun ovenpå og arbejder frivilligt hos Lænken som kontaktperson for andre alkoholikere."
+  spans:
+    - text: "Lænken"
+      is_entity: true
+      label: "ORG"
+      reason: "is the name of an association, recognizable as a name despite being an ordinary Danish word with the definite article"  # TODO (ORG)
+
+- text: "1. januar i år åbnede Helles kolonial."
+  spans:
+    - text: "Helles kolonial"
+      is_entity: true
+      label: "ORG"
+      reason: "is the name of a shop, a business and therefore ORG; the span covers the whole name including the lowercase common noun"  # TODO (ORG)
+
+- text: "På anklagestolene sad seks danske søfolk fra narko-skibet Nerma og tre amerikanske medanklagede stumme af spænding."
+  spans:
+    - text: "danske"
+      is_entity: true
+      label: "MISC"
+      reason: "is an adjective derived from a country name"  # TODO (MISC)
+    - text: "Nerma"
+      is_entity: true
+      label: "ORG"
+      reason: "is the name of a ship; vessels are annotated as ORG in this scheme"  # TODO (ORG)
+    - text: "amerikanske"
+      is_entity: true
+      label: "MISC"
+      reason: "is an adjective derived from a country name"  # TODO (MISC)
+
+- text: "Denne engangssum kommer til udbetaling hos enhver dansk SAS-pilot, der mister sit certifikat af medicinske grunde."
+  spans:
+    - text: "dansk"
+      is_entity: true
+      label: "MISC"
+      reason: "is an adjective derived from a country name"  # TODO (MISC)
+    - text: "SAS-pilot"
+      is_entity: true
+      label: "MISC"
+      reason: "is a compound whose first part is a company name; the whole compound is MISC, not just the ORG part"  # TODO (MISC)
+
+- text: "På sidelinien i Skandia-dramaet står Baltica."
+  spans:
+    - text: "Skandia-dramaet"
+      is_entity: true
+      label: "MISC"
+      reason: "is a compound whose first part is a company name, and such derived compounds are MISC rather than ORG"  # TODO (MISC)
+    - text: "Baltica"
+      is_entity: true
+      label: "ORG"
+      reason: "is a company name standing alone, so it keeps the ORG label"  # TODO (ORG)
+
+- text: "Derudover er der en række passagerer, blandt andet en amerikaner og tre malayer."
+  spans:
+    - text: "amerikaner"
+      is_entity: true
+      label: "MISC"
+      reason: "is a noun denoting a person by nationality, derived from a country name; the derived form is MISC even though it refers to people"  # TODO (MISC)
+    - text: "malayer"
+      is_entity: true
+      label: "MISC"
+      reason: "is a noun denoting a person by nationality, derived from a country name; the derived form is MISC even though it refers to people"  # TODO (MISC)
+
+- text: "Partiet går to mandater frem og har i dag otte."
+  spans: []
+
+- text: "De var faktiks ment som at være 4 forskellige koncerter men blev hurtigt samlet.I"
+  spans: []

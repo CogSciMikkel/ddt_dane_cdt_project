@@ -1,0 +1,1 @@
+cd /work/training_practice/ddt_dane_cdt_project && source .venv/bin/activate && hash -r && python -m ipykernel install --user --name ddt_dane_cdt_project --display-name "Python (.venv for DaCy)"

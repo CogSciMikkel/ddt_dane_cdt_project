@@ -10,11 +10,11 @@ description: >
 
 # Variables can be referenced across the project.yml using ${vars.var_name}
 vars:
-  config: "dacy_medium"
+  config: "llm_ner"
   lang: "da"
   treebank: "UD_Danish-DDT"
   corpus: "cdt_ddt"
-  model: "dacy_medium_trf"
+  model: "llm_ner"
   train_name: "da_ddt-ud-train"
   dev_name: "da_ddt-ud-dev"
   test_name: "da_ddt-ud-test"
@@ -52,8 +52,9 @@ workflows:
     - preprocess_ddt
     - combine
     - merge_cdt_ddt
-    - train
-    - evaluate
+#    - train
+#    - evaluate
+#    - evaluate_llm
 #    - package
 
 commands:

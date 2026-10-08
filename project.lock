@@ -219,14 +219,14 @@ evaluate_llm:
       ./metrics/llm-ner.json --code scripts/llm_registry.py --gpu-id -1
   deps:
     - path: configs/llm_ner.cfg
-      md5: 65bd441e1bca2137dd0086d0075475de
+      md5: a9fe8eb7c357707153d07cd4e373c388
     - path: assets/dane_fewshot.yml
       md5: d569129561f88b6ba471e3fef047c888
     - path: corpus/cdt_ddt/test.spacy
       md5: 62a0906fbb9f753de948c6fed26f95bb
   outs:
     - path: metrics/llm-ner.json
-      md5: 63d34256700808d133f5bd9b37738a9e
+      md5: 7d7e4445cd27fc653682151a94420010
 package:
   cmd: python -m weasel run package
   script:

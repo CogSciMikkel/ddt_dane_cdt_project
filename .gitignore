@@ -1,4 +1,5 @@
-assets
+assets/*
+!assets/dane_fewshot.yml
 corpus
 training
 packages
@@ -6,5 +7,4 @@ packages
 .env
 .venv-cuda13
 .venv-old
-env_command.txt
 __pycache__dacy_wheels/
